@@ -22,19 +22,20 @@ camera.shutter_speed = 2000000 #shutter speed in milliseconds
 while i>0: #loop never stops until force stop
     print('exposure', i) #shows how many grabs have been taken
     now = datetime.now() #gets current date/time
-    camera.capture('/home/antonio/Desktop/meteors/meteor%s.jpg' % now) #take picture
-    image = cv.imread('/home/antonio/Desktop/meteors/meteor%s.jpg' % now) #open image up
+    camera.capture('/home/antonio/Desktop/meteors/meteor%s.jpg' % now) #take picture and save to directory
+    image = cv.imread('/home/antonio/Desktop/meteors/meteor%s.jpg' % now) #open image up from the same directory
     gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY) #convert to greyscale
     blur = cv.GaussianBlur(gray, (5,5), 0) #apply gaussian blur to remove noise
     canny = cv.Canny(blur, 100, 200, 3) #edge detector
-    cv.imwrite('/home/antonio/Desktop/temp/image%s.jpg' % now,canny) #save file temporarily
+    cv.imwrite('/home/antonio/Desktop/temp/image%s.jpg' % now,canny) #save file temporarily in directory
     meteors = cv.HoughLinesP(canny, 1, np.pi/180, 25, minLineLength=50, maxLineGap=5) #check for meteors
     if meteors is None:
-        mainfile=str('/home/antonio/Desktop/meteors/meteor%s.jpg' % now)
-        os.remove(mainfile)#delete original image if no meteors
-        tempfile=str('/home/antonio/Desktop/temp/image%s.jpg' % now)
-        os.remove(tempfile)#delete the temp file if no meteors
-    else: #else move on
+        mainfile=str('/home/antonio/Desktop/meteors/meteor%s.jpg' % now) #grab file made to delete it to save storage space
+        os.remove(mainfile) #delete original image if no meteors
+        tempfile=str('/home/antonio/Desktop/temp/image%s.jpg' % now) #grab temp file to delete to save storage space
+        os.remove(tempfile) #delete the temp file if no meteors
+    else: #else move on - if it thinks there is a meteor, it will save both the main and temp file - 
+                            #the temp file will show what it thinks is a meteor for you to compare to the main file
         count+=1
-        print('Detected', count, 'meteors so far')
+    print('Detected', count, 'meteors so far')
     i+=1
